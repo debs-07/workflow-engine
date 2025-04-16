@@ -1,0 +1,50 @@
+{
+  "name": "workflow-engine",
+  "version": "1.0.0",
+  "description": "A backend for managing tasks with secure user authentication and full task management capabilities.",
+  "main": "dist/server.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/debs-07/workflow-engine.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/server.js",
+    "prestart": "pnpm build",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "dev": "nodemon --watch src --ext ts --exec \"node --loader ts-node/esm\" src/server.ts"
+  },
+  "keywords": [
+    "task-management",
+    "node.js",
+    "typescript",
+    "express",
+    "jwt",
+    "mongodb"
+  ],
+  "author": "Debakanta Satapathy",
+  "packageManager": "pnpm@10.8.1",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.2",
+    "dotenv": "^16.5.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/node": "^22.14.1",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
