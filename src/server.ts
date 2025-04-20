@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import { connectDB } from "./config/db.config.ts";
+import { errorHandler } from "./middlewares/error.middleware.ts";
 
 // Load environment variables
 dotenv.config();
@@ -12,6 +13,8 @@ const port = process.env.PORT;
 if (!port) throw new Error("PORT is required");
 
 app.use(cors());
+
+app.use(errorHandler); // Error-handling middleware
 
 (async () => {
   try {
