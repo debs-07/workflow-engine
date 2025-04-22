@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "typeRoots": ["src/@types", "node_modules/@types"] // TypeScript to load src/@types and node_modules/@types, applying augmentation(Ex-Express.Request)
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

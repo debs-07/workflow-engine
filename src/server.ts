@@ -8,7 +8,6 @@ import { errorHandler } from "./middlewares/error.middleware.ts";
 import authRoutes from "./routes/auth.routes.ts";
 
 const app = express();
-const port = process.env.PORT;
 
 app.use(cors());
 app.use(json());
@@ -24,6 +23,7 @@ app.use(errorHandler); // Error-handling middleware
 
     await connectDB();
 
+    const port = process.env.PORT;
     app.listen(port, () => {
       console.log(`Workflow engine running on port ${port}`);
     });
