@@ -8,9 +8,10 @@ export const errorHandler = (
   req: Request,
   res: Response,
   _next: NextFunction
-): void => {
-  // Handling known errors
+) => {
+  // Request error
   if (error instanceof AppError) {
+    console.error("Request error : ", error);
     res.status(error.status).json(
       createResponse({
         message: error.message,
@@ -22,8 +23,8 @@ export const errorHandler = (
     return;
   }
 
-  // Handling unexpected errors
-  console.error("Unexpected error: ", error);
+  // Unexpected errors
+  console.error("Unexpected error : ", error);
   res.status(500).json(
     createResponse({
       message: "Internal server error",
