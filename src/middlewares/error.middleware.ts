@@ -14,7 +14,7 @@ export const errorHandler = (
     console.error("Request error : ", error);
     res.status(error.status).json(
       createResponse({
-        message: error.message,
+        message: error.userMessage,
         success: false,
         errors: null,
         data: null,
