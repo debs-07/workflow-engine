@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import User from "../models/auth/user.model.ts";
+import { User } from "../models/auth/user.model.ts";
 import { AuthError, ConflictError } from "../utils/errors.util.ts";
 
 export const signUpService = async (

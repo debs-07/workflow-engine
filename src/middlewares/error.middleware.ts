@@ -5,7 +5,7 @@ import { createResponse } from "../helpers/response.helper.ts";
 
 export const errorHandler = (
   error: Error,
-  req: Request,
+  _req: Request,
   res: Response,
   _next: NextFunction
 ) => {
