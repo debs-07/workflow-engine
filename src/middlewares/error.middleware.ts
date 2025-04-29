@@ -3,12 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/errors.util.ts";
 import { createResponse } from "../helpers/response.helper.ts";
 
-export const errorHandler = (
-  error: Error,
-  _req: Request,
-  res: Response,
-  _next: NextFunction
-) => {
+export const errorHandler = (error: Error, _req: Request, res: Response, _next: NextFunction) => {
   // Request error
   if (error instanceof AppError) {
     console.error("Request error : ", error);
@@ -16,9 +11,7 @@ export const errorHandler = (
       createResponse({
         message: error.userMessage,
         success: false,
-        errors: null,
-        data: null,
-      })
+      }),
     );
     return;
   }
@@ -29,9 +22,7 @@ export const errorHandler = (
     createResponse({
       message: "Internal server error",
       success: false,
-      errors: null,
-      data: null,
-    })
+    }),
   );
   return;
 };

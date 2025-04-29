@@ -16,10 +16,7 @@ export const verifyJWT = (req: Request, _res: Response, next: NextFunction) => {
   let decoded: CustomJwtPayload;
 
   try {
-    decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET_KEY!
-    ) as CustomJwtPayload;
+    decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!) as CustomJwtPayload;
   } catch (error: unknown) {
     let errMessage: string;
     let userMessage: string;

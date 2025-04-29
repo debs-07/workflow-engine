@@ -3,12 +3,7 @@ export class AppError extends Error {
   public readonly userMessage: string;
   public readonly isOperational: boolean;
 
-  constructor(
-    status: number,
-    errMessage: string,
-    userMessage?: string,
-    isOperational = true
-  ) {
+  constructor(status: number, errMessage: string, userMessage?: string, isOperational = true) {
     super(errMessage); // Update Error class message property
     this.status = status;
     this.userMessage = userMessage ?? errMessage;
@@ -46,11 +41,7 @@ export class NotFoundError extends AppError {
 }
 
 export class CustomError extends AppError {
-  constructor(
-    status: number,
-    errMessage: string,
-    userMessage: string = "Internal server error"
-  ) {
+  constructor(status: number, errMessage: string, userMessage: string = "Internal server error") {
     super(status, errMessage, userMessage);
   }
 }

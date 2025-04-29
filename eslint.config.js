@@ -29,10 +29,7 @@ export default defineConfig([
     },
     rules: {
       "@typescript-eslint/explicit-module-boundary-types": "off", // Allow implicit return types
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_" },
-      ], // Ignore linting in if variable starts with "_"
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }], // Ignore linting in if variable starts with "_"
     },
   },
 ]);

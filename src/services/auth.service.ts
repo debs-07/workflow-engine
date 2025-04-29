@@ -4,11 +4,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/auth/user.model.ts";
 import { AuthError, ConflictError } from "../utils/errors.util.ts";
 
-export const signUpService = async (
-  email: string,
-  password: string,
-  name: string
-) => {
+export const signUpService = async (email: string, password: string, name: string) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) throw new ConflictError("Email already registered");
 
