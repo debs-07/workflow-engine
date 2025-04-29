@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { body, validationResult } from "express-validator";
+import { param, body, validationResult } from "express-validator";
 
 import { ValidationError } from "../utils/errors.util.ts";
 
@@ -15,6 +15,8 @@ const HandleValidationResult = (req: Request, res: Response, next: NextFunction)
   }
   next();
 };
+
+// --------------------- Auth validators ---------------------
 
 const emailValidator = body("email").trim().isEmail().normalizeEmail().withMessage("Email format is invalid");
 
@@ -33,3 +35,17 @@ const passwordValidatorSignIn = body("password").notEmpty().withMessage("Passwor
 export const validateSignUp = [emailValidator, passwordValidatorSignUp, nameValidatorSignUp, HandleValidationResult];
 
 export const validateSignIn = [emailValidator, passwordValidatorSignIn, HandleValidationResult];
+
+// --------------------- Project validators ---------------------
+
+export const validateProjectId = [param("id").isMongoId().withMessage("Invalid project ID"), HandleValidationResult];
+
+export const validateProjectInput = [
+  body("name").trim().isLength({ min: 4, max: 100 }).withMessage("Name must be between 4 and 100 characters"),
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Description can be at most 500 characters long"),
+  HandleValidationResult,
+];

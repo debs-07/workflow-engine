@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db.config.ts";
 import { validateEnvVars } from "./config/env.config.ts";
 import { errorHandler } from "./middlewares/error.middleware.ts";
+import { verifyJWT } from "./middlewares/auth.middleware.ts";
 import authRoutes from "./routes/auth.routes.ts";
+import projectRoutes from "./routes/project.routes.ts";
 
 const app = express();
 
@@ -13,6 +15,7 @@ app.use(cors());
 app.use(json());
 
 app.use("/auth", authRoutes);
+app.use("/projects", verifyJWT, projectRoutes);
 
 app.use(errorHandler); // Error-handling middleware
 
