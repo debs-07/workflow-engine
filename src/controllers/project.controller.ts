@@ -8,58 +8,36 @@ import {
   updateProjectDetailsService,
   deleteProjectService,
 } from "../services/project.service.ts";
+import { IProject } from "../models/core/project.model.ts";
 
 export const fetchProjects = async (req: Request, res: Response, _next: NextFunction) => {
   const { message, data } = await fetchProjectsService(req.userId);
 
-  res.status(200).json(
-    createResponse({
-      message,
-      data,
-    }),
-  );
+  res.status(200).json(createResponse({ message, data }));
 };
 
 export const createProject = async (req: Request, res: Response, _next: NextFunction) => {
-  const { name, description } = req.body;
-  const { message } = await createProjectService(name, description, req.userId);
+  const project: IProject = req.body.project;
+  const { message } = await createProjectService({ ...project, userId: req.userId });
 
-  res.status(201).json(
-    createResponse({
-      message,
-    }),
-  );
+  res.status(201).json(createResponse({ message }));
 };
 
 export const fetchProjectDetails = async (req: Request, res: Response, _next: NextFunction) => {
   const { message, data } = await fetchProjectDetailsService(req.params.id, req.userId);
 
-  res.status(200).json(
-    createResponse({
-      message,
-
-      data,
-    }),
-  );
+  res.status(200).json(createResponse({ message, data }));
 };
 
 export const updateProjectDetails = async (req: Request, res: Response, _next: NextFunction) => {
-  const { name, description } = req.body;
-  const { message } = await updateProjectDetailsService(req.params.id, name, description, req.userId);
+  const project: IProject = req.body.project;
+  const { message } = await updateProjectDetailsService(req.params.id, { ...project, userId: req.userId });
 
-  res.status(200).json(
-    createResponse({
-      message,
-    }),
-  );
+  res.status(200).json(createResponse({ message }));
 };
 
 export const deleteProject = async (req: Request, res: Response, _next: NextFunction) => {
   const { message } = await deleteProjectService(req.params.id, req.userId);
 
-  res.status(200).json(
-    createResponse({
-      message,
-    }),
-  );
+  res.status(200).json(createResponse({ message }));
 };

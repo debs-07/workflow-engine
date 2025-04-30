@@ -4,7 +4,7 @@ export interface IProject {
   name: string;
   description?: string;
   isDeleted: boolean;
-  deletedAt: Date;
+  deletedAt?: Date;
   userId: Schema.Types.ObjectId;
 }
 
@@ -37,10 +37,9 @@ const projectSchema = new Schema<IProject>(
   },
 );
 
-// Compound index for unique name + user combination, only for non-deleted projects
-projectSchema.index(
-  { name: 1, userId: 1 },
-  { unique: true, partialFilterExpression: { isDeleted: { $eq: false } } }, // Apply uniqueness only when isDeleted is false
-);
+// Compound index for unique name + user combination(apply uniqueness only when isDeleted is false)
+projectSchema.index({ name: 1, userId: 1 }, { unique: true, partialFilterExpression: { isDeleted: { $eq: false } } });
+// Compound index for faster fetching
+projectSchema.index({ userId: 1, isDeleted: 1 });
 
 export const Project = model("Project", projectSchema);

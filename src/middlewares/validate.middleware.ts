@@ -41,8 +41,8 @@ export const validateSignIn = [emailValidator, passwordValidatorSignIn, HandleVa
 export const validateProjectId = [param("id").isMongoId().withMessage("Invalid project ID"), HandleValidationResult];
 
 export const validateProjectInput = [
-  body("name").trim().isLength({ min: 4, max: 100 }).withMessage("Name must be between 4 and 100 characters"),
-  body("description")
+  body("project.name").trim().isLength({ min: 4, max: 100 }).withMessage("Name must be between 4 and 100 characters"),
+  body("project.description")
     .optional()
     .trim()
     .isLength({ max: 500 })
