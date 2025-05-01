@@ -8,6 +8,7 @@ import { errorHandler } from "./middlewares/error.middleware.ts";
 import { verifyJWT } from "./middlewares/auth.middleware.ts";
 import authRoutes from "./routes/auth.routes.ts";
 import projectRoutes from "./routes/project.routes.ts";
+import taskRoutes from "./routes/task.routes.ts";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(json());
 
 app.use("/auth", authRoutes);
 app.use("/projects", verifyJWT, projectRoutes);
+app.use("/tasks", verifyJWT, taskRoutes);
 
 app.use(errorHandler); // Error-handling middleware
 

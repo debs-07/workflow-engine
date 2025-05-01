@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { param, body, validationResult } from "express-validator";
 
 import { ValidationError } from "../utils/errors.util.ts";
+import { taskPriority, taskStatus } from "../models/core/task.model.ts";
 
 const HandleValidationResult = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
@@ -64,6 +65,62 @@ export const validateProjectInput = [
     .trim()
     .isLength({ max: 500 })
     .withMessage("Description can be at most 500 characters long"),
+
+  HandleValidationResult,
+];
+
+// --------------------- Task validators ------------------------
+
+export const validateTaskId = [param("id").isMongoId().withMessage("Invalid task ID"), HandleValidationResult];
+
+export const validateTaskInput = [
+  // Restrict task object to allowed fields
+  body("task")
+    .isObject()
+    .withMessage("The 'task' property must be an object")
+    .custom((task) => verifyFields(task, ["title", "description", "status", "priority", "dueDate", "projectId"])),
+
+  // title
+  body("task.title").trim().isLength({ min: 4, max: 100 }).withMessage("Title must be between 4 and 100 characters"),
+
+  // description
+  body("task.description")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Description can be at most 500 characters long"),
+
+  // status
+  body("task.status")
+    .optional()
+    .isIn(Object.values(taskStatus))
+    .withMessage(`Status must be one of: ${Object.values(taskStatus).join(",")}`),
+
+  // priority
+  body("task.priority")
+    .optional()
+    .isIn(Object.values(taskPriority))
+    .withMessage(`Priority must be one of: ${Object.values(taskPriority).join(",")}`),
+
+  // dueDate
+  body("task.dueDate")
+    .isDate({ format: "YYYY-MM-DD" })
+    .withMessage("Due Date must be a valid date in YYYY-MM-DD format")
+    .custom((dueDate) => {
+      if (dueDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const due = new Date(dueDate);
+        due.setHours(0, 0, 0, 0);
+
+        if (due < today) throw new ValidationError("Due Date cannot be earlier than today");
+      }
+      return true;
+    }),
+
+  // projectId
+  body("task.projectId").optional({ checkFalsy: true }).isMongoId().withMessage("Invalid project ID"),
 
   HandleValidationResult,
 ];
