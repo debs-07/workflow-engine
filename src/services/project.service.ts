@@ -2,12 +2,16 @@ import { FilterQuery, ProjectionType, UpdateQuery, QueryOptions } from "mongoose
 
 import { SuccessResponse } from "../@types/success-response";
 import { IProject, Project } from "../models/core/project.model.ts";
+import { ITask, Task } from "../models/core/task.model.ts";
 import { CustomError } from "../utils/errors.util.ts";
 
 type Filter = FilterQuery<IProject>;
 type Projection = ProjectionType<IProject>;
 type Update = UpdateQuery<IProject>;
 type QueryOpts = QueryOptions<IProject>;
+
+type TaskFilter = FilterQuery<ITask>;
+type TaskUpdate = UpdateQuery<ITask>;
 
 export const fetchProjectsService = async (userId: string): Promise<SuccessResponse<IProject[]>> => {
   const filterQuery: Filter = { userId, isDeleted: false };
@@ -49,7 +53,7 @@ export const updateProjectDetailsService = async (id: string, project: IProject)
 
   const existingProject = await Project.findOne(findOneFilter);
 
-  if (existingProject) throw new CustomError(403, `Project with the name ${project?.name} already exists`);
+  if (existingProject) throw new CustomError(403, `Project with the name ${project.name} already exists`);
 
   const findOneAndUpdateFilter: Filter = { _id: id, userId: project.userId };
   const updateQuery: Update = { $set: project };
@@ -63,12 +67,17 @@ export const updateProjectDetailsService = async (id: string, project: IProject)
 };
 
 export const deleteProjectService = async (id: string, userId: string): Promise<SuccessResponse> => {
-  const filterQuery: Filter = { _id: id, userId, isDeleted: false };
-  const updateQuery: Update = { $set: { isDeleted: true, deletedAt: new Date() } };
+  const projectFilterQuery: Filter = { _id: id, userId, isDeleted: false };
+  const projectUpdateQuery: Update = { $set: { isDeleted: true, deletedAt: new Date() } };
 
-  const project = await Project.findOneAndUpdate(filterQuery, updateQuery);
+  const project = await Project.findOneAndUpdate(projectFilterQuery, projectUpdateQuery);
 
   if (!project) throw new CustomError(404, "Project deletion unsuccessful");
+
+  const taskFilterQuery: TaskFilter = { projectId: id, userId: userId };
+  const taskUpdateQuery: TaskUpdate = { $set: { projectId: null } };
+
+  await Task.updateMany(taskFilterQuery, taskUpdateQuery);
 
   return { message: "Project deleted successfully" };
 };

@@ -16,7 +16,15 @@ const HandleValidationResult = (req: Request, res: Response, next: NextFunction)
   next();
 };
 
-// --------------------- Auth validators ---------------------
+const verifyFields = (data: object, allowedFields: Array<string>) => {
+  const receivedFields = Object.keys(data);
+  const extraFields = receivedFields.filter((field) => !allowedFields.includes(field));
+
+  if (extraFields.length > 0) throw new ValidationError(`Unexpected fields found: ${extraFields.join(", ")}`);
+  return true;
+};
+
+// --------------------- Auth validators ------------------------
 
 const emailValidator = body("email").trim().isEmail().normalizeEmail().withMessage("Email format is invalid");
 
@@ -41,11 +49,21 @@ export const validateSignIn = [emailValidator, passwordValidatorSignIn, HandleVa
 export const validateProjectId = [param("id").isMongoId().withMessage("Invalid project ID"), HandleValidationResult];
 
 export const validateProjectInput = [
+  // Restrict project object to allowed fields
+  body("project")
+    .isObject()
+    .withMessage("The 'project' property must be an object")
+    .custom((project) => verifyFields(project, ["name", "description"])),
+
+  // name
   body("project.name").trim().isLength({ min: 4, max: 100 }).withMessage("Name must be between 4 and 100 characters"),
+
+  // description
   body("project.description")
     .optional()
     .trim()
     .isLength({ max: 500 })
     .withMessage("Description can be at most 500 characters long"),
+
   HandleValidationResult,
 ];
