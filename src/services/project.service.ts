@@ -1,6 +1,6 @@
 import { FilterQuery, ProjectionType, UpdateQuery, QueryOptions } from "mongoose";
 
-import { SuccessResponse } from "../@types/success-response";
+import { SuccessResponseWithPagination, SuccessResponse, FetchFilters } from "../@types/custom/index";
 import { IProject, Project } from "../models/core/project.model.ts";
 import { ITask, Task } from "../models/core/task.model.ts";
 import { CustomError } from "../utils/errors.util.ts";
@@ -13,13 +13,30 @@ type QueryOpts = QueryOptions<IProject>;
 type TaskFilter = FilterQuery<ITask>;
 type TaskUpdate = UpdateQuery<ITask>;
 
-export const fetchProjectsService = async (userId: string): Promise<SuccessResponse<IProject[]>> => {
+export const fetchProjectsService = async (
+  userId: string,
+  fetchFilters: FetchFilters,
+): Promise<SuccessResponseWithPagination<IProject[]>> => {
+  const { page, limit } = fetchFilters;
+
+  const skip = (page - 1) * limit;
+
   const filterQuery: Filter = { userId, isDeleted: false };
-  const projection: Projection = { _id: 1, name: 1, description: 1, userId: 1, createdAt: 1, updatedAt: 1 };
+  const projection: Projection = { _id: 1, name: 1, description: 1, createdAt: 1, updatedAt: 1 };
 
-  const projects = await Project.find(filterQuery, projection);
+  const [projects, totalProjects] = await Promise.all([
+    Project.find(filterQuery, projection).skip(skip).limit(limit),
+    Project.countDocuments(filterQuery),
+  ]);
 
-  return { message: "Projects fetched successfully", data: projects };
+  const totalPages = totalProjects === 0 ? 1 : Math.ceil(totalProjects / limit);
+
+  return {
+    message: "Projects fetched successfully",
+    data: projects,
+    totalData: totalProjects,
+    totalPages: totalPages,
+  };
 };
 
 export const createProjectService = async (project: IProject): Promise<SuccessResponse> => {

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { param, body, validationResult } from "express-validator";
+import { query, param, body, validationResult } from "express-validator";
 
 import { ValidationError } from "../utils/errors.util.ts";
 import { taskPriority, taskStatus } from "../models/core/task.model.ts";
@@ -24,6 +24,21 @@ const verifyFields = (data: object, allowedFields: Array<string>) => {
   if (extraFields.length > 0) throw new ValidationError(`Unexpected fields found: ${extraFields.join(", ")}`);
   return true;
 };
+
+// --------------------- Common validators ------------------------
+
+export const verifyFetchQuery = [
+  // page
+  query("page").optional().isInt({ min: 1 }).withMessage("Page must be a positive integer"),
+
+  // limit
+  query("limit")
+    .optional()
+    .isInt({ min: 1, max: 100 })
+    .withMessage("Limit must be a positive integer between 1 and 100"),
+
+  HandleValidationResult,
+];
 
 // --------------------- Auth validators ------------------------
 

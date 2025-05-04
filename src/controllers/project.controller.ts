@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
+import { IProject } from "../models/core/project.model.ts";
+import { FetchFilters } from "../@types/custom/query-params";
 import { createResponse } from "../helpers/response.helper.ts";
 import {
   createProjectService,
@@ -8,12 +10,18 @@ import {
   updateProjectDetailsService,
   deleteProjectService,
 } from "../services/project.service.ts";
-import { IProject } from "../models/core/project.model.ts";
 
 export const fetchProjects = async (req: Request, res: Response, _next: NextFunction) => {
-  const { message, data } = await fetchProjectsService(req.userId);
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
 
-  res.status(200).json(createResponse({ message, data }));
+  const fetchFilters: FetchFilters = { page, limit };
+
+  const { message, data, totalData, totalPages } = await fetchProjectsService(req.userId, fetchFilters);
+
+  const meta = { page, limit, totalData, totalPages };
+
+  res.status(200).json(createResponse({ message, data, meta }));
 };
 
 export const createProject = async (req: Request, res: Response, _next: NextFunction) => {
