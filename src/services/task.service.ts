@@ -1,6 +1,6 @@
-import { FilterQuery, ProjectionType, UpdateQuery, QueryOptions } from "mongoose";
+import { FilterQuery, ProjectionType, UpdateQuery, QueryOptions, PopulateOptions } from "mongoose";
 
-import { SuccessResponse } from "../@types/success-response";
+import { SuccessResponseWithPagination, SuccessResponse, FetchFilters } from "../@types/custom/index";
 import { ITask, Task } from "../models/core/task.model.ts";
 import { IProject, Project } from "../models/core/project.model.ts";
 import { CustomError } from "../utils/errors.util.ts";
@@ -12,7 +12,15 @@ type QueryOpts = QueryOptions<ITask>;
 
 type ProjectFilter = FilterQuery<IProject>;
 
-export const fetchTasksService = async (userId: string): Promise<SuccessResponse<ITask[]>> => {
+export const fetchTasksService = async (
+  userId: string,
+  projectId: string | null,
+  fetchFilters: FetchFilters,
+): Promise<SuccessResponseWithPagination<ITask[]>> => {
+  const { page, limit } = fetchFilters;
+
+  const skip = (page - 1) * limit;
+
   const filterQuery: Filter = { userId: userId, isDeleted: false };
   const projection: Projection = {
     title: 1,
@@ -20,14 +28,27 @@ export const fetchTasksService = async (userId: string): Promise<SuccessResponse
     status: 1,
     priority: 1,
     dueDate: 1,
-    userId: 1,
     projectId: 1,
     createdAt: 1,
     updatedAt: 1,
   };
-  const tasks = await Task.find(filterQuery, projection);
+  const populate: PopulateOptions = { path: "projectId", select: "name" };
 
-  return { message: "Tasks fetched successfully", data: tasks };
+  if (projectId) filterQuery.projectId = projectId;
+
+  const [tasks, totalTasks] = await Promise.all([
+    Task.find(filterQuery, projection).skip(skip).limit(limit).populate(populate),
+    Task.countDocuments(filterQuery),
+  ]);
+
+  const totalPages = totalTasks === 0 ? 1 : Math.ceil(totalTasks / limit);
+
+  return {
+    message: "Tasks fetched successfully",
+    data: tasks,
+    totalData: totalTasks,
+    totalPages: totalPages,
+  };
 };
 
 export const createTaskService = async (task: ITask): Promise<SuccessResponse> => {

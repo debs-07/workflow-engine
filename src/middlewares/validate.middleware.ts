@@ -27,7 +27,7 @@ const verifyFields = (data: object, allowedFields: Array<string>) => {
 
 // --------------------- Common validators ------------------------
 
-export const verifyFetchQuery = [
+export const verifyFetchFilter = [
   // page
   query("page").optional().isInt({ min: 1 }).withMessage("Page must be a positive integer"),
 
@@ -85,6 +85,11 @@ export const validateProjectInput = [
 ];
 
 // --------------------- Task validators ------------------------
+
+export const validateTaskFetchFilters = [
+  query("projectId").optional().isMongoId().withMessage("Invalid project ID"),
+  ...verifyFetchFilter,
+];
 
 export const validateTaskId = [param("id").isMongoId().withMessage("Invalid task ID"), HandleValidationResult];
 

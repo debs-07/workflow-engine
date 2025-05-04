@@ -7,11 +7,11 @@ import {
   fetchTasks,
   updateTaskDetails,
 } from "../controllers/task.controller.ts";
-import { validateTaskInput, validateTaskId } from "../middlewares/validate.middleware.ts";
+import { validateTaskInput, validateTaskId, validateTaskFetchFilters } from "../middlewares/validate.middleware.ts";
 
 const router = express.Router();
 
-router.get("/", fetchTasks);
+router.get("/", validateTaskFetchFilters, fetchTasks);
 router.post("/", validateTaskInput, createTask);
 router.get("/:id", validateTaskId, fetchTaskDetails);
 router.put("/:id", validateTaskId, validateTaskInput, updateTaskDetails);
