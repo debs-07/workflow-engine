@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { IProject } from "../models/core/project.model.ts";
-import { FetchFilters } from "../@types/custom/query-params";
+import { FetchFilters } from "../@types/custom/index";
 import { createResponse } from "../helpers/response.helper.ts";
 import {
   createProjectService,

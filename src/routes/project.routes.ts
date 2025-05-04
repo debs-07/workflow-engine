@@ -7,11 +7,11 @@ import {
   updateProjectDetails,
   deleteProject,
 } from "../controllers/project.controller.ts";
-import { validateProjectId, validateProjectInput, verifyFetchQuery } from "../middlewares/validate.middleware.ts";
+import { validateProjectId, validateProjectInput, verifyFetchFilter } from "../middlewares/validate.middleware.ts";
 
 const router = express.Router();
 
-router.get("/", verifyFetchQuery, fetchProjects);
+router.get("/", verifyFetchFilter, fetchProjects);
 router.post("/", validateProjectInput, createProject);
 router.get("/:id", validateProjectId, fetchProjectDetails);
 router.put("/:id", validateProjectId, validateProjectInput, updateProjectDetails);
