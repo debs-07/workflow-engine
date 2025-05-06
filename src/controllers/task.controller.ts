@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { ITask } from "../models/core/task.model.ts";
-import { FetchFilters } from "../@types/custom/index";
+import { FetchFilters, Search } from "../@types/custom/index";
 import { createResponse } from "../helpers/response.helper.ts";
 import {
   createTaskService,
@@ -11,14 +11,21 @@ import {
   updateTaskDetailsService,
 } from "../services/task.service.ts";
 
-export const fetchTasks = async (req: Request, res: Response, _next: NextFunction) => {
-  const projectId = typeof req.query.projectId === "string" ? req.query.projectId : null;
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
+export const fetchTasks = async (
+  req: Request<unknown, unknown, unknown, FetchFilters>,
+  res: Response,
+  _next: NextFunction,
+) => {
+  const { page, limit, sortOrder, sortBy, ...rest } = req.query;
+  const search = rest as Search["search"];
 
-  const fetchFilters: FetchFilters = { page, limit };
-
-  const { message, data, totalData, totalPages } = await fetchTasksService(req.userId, projectId, fetchFilters);
+  const { message, data, totalData, totalPages } = await fetchTasksService(req.userId, {
+    page,
+    limit,
+    sortOrder,
+    sortBy,
+    search,
+  });
 
   const meta = { page, limit, totalPages, totalData };
 

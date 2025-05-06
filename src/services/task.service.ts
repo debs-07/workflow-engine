@@ -4,6 +4,7 @@ import { SuccessResponseWithPagination, SuccessResponse, FetchFilters } from "..
 import { ITask, Task } from "../models/core/task.model.ts";
 import { IProject, Project } from "../models/core/project.model.ts";
 import { CustomError } from "../utils/errors.util.ts";
+import { applySearchFilters } from "../helpers/query.helper.ts";
 
 type Filter = FilterQuery<ITask>;
 type Projection = ProjectionType<ITask>;
@@ -14,14 +15,13 @@ type ProjectFilter = FilterQuery<IProject>;
 
 export const fetchTasksService = async (
   userId: string,
-  projectId: string | null,
   fetchFilters: FetchFilters,
 ): Promise<SuccessResponseWithPagination<ITask[]>> => {
-  const { page, limit } = fetchFilters;
-
-  const skip = (page - 1) * limit;
+  const { page = 1, limit = 10, sortOrder = "desc", sortBy = "createdAt", search = {} } = fetchFilters;
 
   const filterQuery: Filter = { userId: userId, isDeleted: false };
+  applySearchFilters<ITask>(filterQuery, search, "task");
+
   const projection: Projection = {
     title: 1,
     description: 1,
@@ -32,12 +32,13 @@ export const fetchTasksService = async (
     createdAt: 1,
     updatedAt: 1,
   };
+  const sort = { [sortBy]: sortOrder };
+  const skip = (page - 1) * limit;
+
   const populate: PopulateOptions = { path: "projectId", select: "name" };
 
-  if (projectId) filterQuery.projectId = projectId;
-
   const [tasks, totalTasks] = await Promise.all([
-    Task.find(filterQuery, projection).skip(skip).limit(limit).populate(populate),
+    Task.find(filterQuery, projection).sort(sort).skip(skip).limit(limit).populate(populate),
     Task.countDocuments(filterQuery),
   ]);
 

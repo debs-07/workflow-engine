@@ -9,7 +9,7 @@ export interface Sorting {
 }
 
 export interface Search {
-  search?: { [field: string]: string };
+  search?: Record<string, string>;
 }
 
 export interface FetchFilters extends Pagination, Sorting, Search {}

@@ -11,7 +11,7 @@ import { validateProjectId, validateProjectInput, verifyFetchFilter } from "../m
 
 const router = express.Router();
 
-router.get("/", verifyFetchFilter, fetchProjects);
+router.get("/", verifyFetchFilter("project"), fetchProjects);
 router.post("/", validateProjectInput, createProject);
 router.get("/:id", validateProjectId, fetchProjectDetails);
 router.put("/:id", validateProjectId, validateProjectInput, updateProjectDetails);

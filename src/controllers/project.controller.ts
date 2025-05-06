@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { IProject } from "../models/core/project.model.ts";
-import { FetchFilters } from "../@types/custom/index";
+import { FetchFilters, Search } from "../@types/custom/index";
 import { createResponse } from "../helpers/response.helper.ts";
 import {
   createProjectService,
@@ -11,15 +11,23 @@ import {
   deleteProjectService,
 } from "../services/project.service.ts";
 
-export const fetchProjects = async (req: Request, res: Response, _next: NextFunction) => {
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 10;
+export const fetchProjects = async (
+  req: Request<unknown, unknown, unknown, FetchFilters>,
+  res: Response,
+  _next: NextFunction,
+) => {
+  const { page, limit, sortOrder, sortBy, ...rest } = req.query;
+  const search = rest as Search["search"];
 
-  const fetchFilters: FetchFilters = { page, limit };
+  const { message, data, totalData, totalPages } = await fetchProjectsService(req.userId, {
+    page,
+    limit,
+    sortOrder,
+    sortBy,
+    search,
+  });
 
-  const { message, data, totalData, totalPages } = await fetchProjectsService(req.userId, fetchFilters);
-
-  const meta = { page, limit, totalData, totalPages };
+  const meta = { page: Number(page || 1), limit: Number(limit || 10), totalData, totalPages };
 
   res.status(200).json(createResponse({ message, data, meta }));
 };
