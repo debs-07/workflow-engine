@@ -108,6 +108,7 @@ const emailValidator = body("email").trim().isEmail().normalizeEmail().withMessa
 
 const passwordValidatorSignUp = body("password")
   .isLength({ min: 6 })
+  .withMessage("Password must be at least 6 characters long")
   .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s]+$/)
   .withMessage("Password must be at least 6 characters, with 1 uppercase, 1 lowercase, and 1 number");
 
